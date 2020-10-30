@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 International Business Machines
+ * Copyright 2020 International Business Machines
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 
 /*
- * SNAP Maintenance tool Written by Eberhard S. Amann esa@de.ibm.com.
+ * OC-ACCEL Maintenance tool
+ * Initial SNAP Maintenance tool Written by Eberhard S. Amann esa@de.ibm.com.
  */
 
 #include <stdio.h>
@@ -183,7 +184,7 @@ static void snap_version (void* handle)
 
     /* Read Card Capabilities */
     snap_card_ioctl (handle, GET_CARD_TYPE, (unsigned long)&ioctl_data);
-    VERBOSE1 ("SNAP Card Id: 0x%x ", (int)ioctl_data);
+    VERBOSE1 ("OC-ACCEL Card Id: 0x%x ", (int)ioctl_data);
 
     /* Get Card name */
     char buffer[16];
@@ -205,7 +206,7 @@ static void snap_version (void* handle)
     VERBOSE1 ("Min_DMA: %d)\n", (int)ioctl_data);
 
     reg = snap_read64 (handle, SNAP_IVR);
-    VERBOSE1 ("SNAP FPGA Release: v%d.%d.%d Distance: %d GIT: 0x%8.8x\n",
+    VERBOSE1 ("OC-ACCEL FPGA Release:       v%d.%d.%d Distance: %d GIT: 0x%8.8x\n",
               (int) (reg >> 56),
               (int) (reg >> 48ll) & 0xff,
               (int) (reg >> 40ll) & 0xff,
@@ -213,12 +214,18 @@ static void snap_version (void* handle)
               (uint32_t)reg);
 
     reg = snap_read64 (handle, SNAP_BDR);
-    VERBOSE1 ("SNAP FPGA Build (Y/M/D): %04x/%02x/%02x Time (H:M): %02x:%02x\n",
+    VERBOSE1 ("OC-ACCEL FPGA Build (Y/M/D): %04x/%02x/%02x Time (H:M): %02x:%02x\n",
               (int) (reg >> 32ll) & 0xffff,
               (int) (reg >> 24ll) & 0xff,
               (int) (reg >> 16) & 0xff,
               (int) (reg >> 8) & 0xff,
               (int) (reg) & 0xff);
+
+
+    reg = snap_read64(handle, SNAP_FRT);
+    up = (int)(reg / (1000 * 1000 *250));
+    VERBOSE1("OC-ACCEL FPGA Up Time:       %d sec\n", up);
+
 
 
     VERBOSE2 ("[%s] Exit\n", __func__);
