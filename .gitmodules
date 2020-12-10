@@ -1,3 +1,6 @@
 [submodule "hardware/oc-bip"]
 	path = hardware/oc-bip
 	url = https://github.com/OpenCAPI/OpenCAPI3.0_Client_RefDesign.git
+[submodule "software/FloatX"]
+	path = software/FloatX
+	url = git@github.com:oprecomp/FloatX.git
