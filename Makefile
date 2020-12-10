@@ -1,5 +1,5 @@
 #
-# Copyright 2016-2018 International Business Machines
+# Copyright 2016-2020 International Business Machines
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ clean_subdirs += $(config_subdirs) $(software_subdirs) $(hardware_subdirs) $(act
 help:
 	@echo "Main targets for the OC-Accel Framework make process:";
 	@echo "=================================================";
-	@echo "* ./ocaccel_workflow.py  Drives you through the whole simulation process flow";
 	@echo "* snap_config    Configure OC-Accel framework";
 	@echo "* model          Build simulation model for simulator specified via target snap_config";
 	@echo "* sim            Start a simulation";
@@ -58,6 +57,7 @@ help:
 	@echo;
 	@echo "Few tools to help debug";
 	@echo "-----------------------";
+	@echo "* ./ocaccel_workflow.py  Drives you through the whole simulation process flow";
 	@echo "* ./display_traces       Display traces to debug action code";
 	@echo "* ./debug_timing         Display timing failing paths when image generation fails";
 	@echo "* vivado hardware/build/Checkpoints/opt_routed_design.dcp to see logic placement.";
@@ -186,6 +186,7 @@ clean:
 	done
 	@find . -depth -name '*~'  -exec rm -rf '{}' \; -print
 	@find . -depth -name '.#*' -exec rm -rf '{}' \; -print
+	@$(RM) *.mif vivado*.jou vivado*.log
 
 clean_config: clean
 	@$(RM) snap_workflow*.log
