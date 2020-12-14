@@ -2,5 +2,8 @@
 	path = hardware/oc-bip
 	url = https://github.com/OpenCAPI/OpenCAPI3.0_Client_RefDesign.git
 [submodule "software/FloatX"]
-	path = software/FloatX
+	path = transprecision/FloatX
 	url = git@github.com:oprecomp/FloatX.git
+[submodule "transprecision/HLS_arbitrary_Precision_Types"]
+	path = transprecision/HLS_arbitrary_Precision_Types
+	url = git@github.com:Xilinx/HLS_arbitrary_Precision_Types.git

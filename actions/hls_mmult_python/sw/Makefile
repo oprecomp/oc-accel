@@ -46,7 +46,7 @@ projs += snap_mmult_python
 CXXFLAGS = -std=c++11 -fpermissive -DFLOATX_ENABLE
 PyCFLAGS=$(shell python3-config --includes)
 PyCFLAGS+=-fPIC -O2 -DPY_WRAP 
-FLOATXDIR = ../../../software/FloatX/src/
+FLOATXDIR = ../../../transprecision/FloatX/src/
 VERSION:=$(GIT_BRANCH)
 PyCFLAGS += -DGIT_VERSION=\"$(VERSION)\" \
 
