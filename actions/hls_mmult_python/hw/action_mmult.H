@@ -21,10 +21,16 @@
 #include <string.h>
 #include <ap_int.h>
 
-#include "hls_snap.H"
+/* Note that OC-ACCEL introduces the 1024 bit bus possibility    */
+/* hls_snap_1024.H covers both legacy 512 as well as 1024 cases  */
+#include "hls_snap_1024.H"
 #include <action_mmult_python.h> /* Mmult Job definition */
 
+typedef snap_membus_1024_t snap_membus_t;
 
+#define ADDR_RIGHT_SHIFT ADDR_RIGHT_SHIFT_1024
+
+#define BPERDW BPERDW_1024
 
 #define MAX_NB_OF_DECIMAL_READ DATA_SIZE * DATA_SIZE
 typedef int mat_elmt_t; // change to float or double depending on your needs

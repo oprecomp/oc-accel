@@ -37,17 +37,19 @@ endif
 endif
 
 # This is solution specific. Check if we can replace this by generics too.
-LDFLAGS+=-lm
+LDLIBS += -lm
 
 snap_mmult_python: ${snap_mmult_python_objs}
 
 projs += snap_mmult_python
 
-
+CXXFLAGS = -std=c++11 -fpermissive -DFLOATX_ENABLE
 PyCFLAGS=$(shell python3-config --includes)
-PyCFLAGS+=-fPIC -O2 -DPY_WRAP
+PyCFLAGS+=-fPIC -O2 -DPY_WRAP 
+FLOATXDIR = ../../../software/FloatX/src/
 VERSION:=$(GIT_BRANCH)
 PyCFLAGS += -DGIT_VERSION=\"$(VERSION)\" \
+
 
 PREREQ_EXECUTABLES = ld swig
 K := $(foreach exec,$(PREREQ_EXECUTABLES),\
@@ -62,12 +64,13 @@ K := $(foreach exec,$(PREREQ_EXECUTABLES),\
 # 3. c++ -c -fpic XXX_wrap.cxx -I/usr/include/python2.7 (this command will generate XXX_wrap.o file)
 #
 # 4. c++ -shared XXX.o XXX_wrap.o -o XXX.so
+#CPP=g++ 
 
 pywrap:
 	[ -f ./numpy.i ] && echo "numpy.i already here, good" || wget https://raw.githubusercontent.com/numpy/numpy/master/tools/swig/numpy.i
 	swig -python -o snap_mmult_python_wrap.c  dieres.i
-	$(CC) -c -fpic snap_mmult_python.c snap_mmult_python_wrap.c $(PyCFLAGS) -I$(SNAP_ROOT)/software/include/ -I$(SNAP_ROOT)/actions/hls_mmult_python/include
-	$(CC) -shared snap_mmult_python.o snap_mmult_python_wrap.o $(SNAP_ROOT)/software/lib/libosnap.a $(OCSE_ROOT)/libocxl/libocxl.a -o _dieres.so
+	$(CXX) $(CXXFLAGS) -c -fpic snap_mmult_python.c snap_mmult_python_wrap.c $(PyCFLAGS) -I$(FLOATXDIR) -I$(SNAP_ROOT)/software/include/ -I$(SNAP_ROOT)/actions/hls_mmult_python/include
+	$(CXX) -shared snap_mmult_python.o snap_mmult_python_wrap.o $(SNAP_ROOT)/software/lib/libosnap.a $(OCSE_ROOT)/libocxl/libocxl.a -o _dieres.so
 
 pywrap_clean:
 	$(RM) -rf ./*_wrap* ./*.so ./*.o

@@ -26,7 +26,7 @@
 #include "ap_int.h"
 #include "action_mmult.H"
 
-
+ 
 
 // Cast data read from AXI input port to decimal values
 static void mbus_to_mat_elmt_t(snap_membus_t *data_read, uint64_t addr_in_index, mat_elmt_t *table_decimal_in)
@@ -39,7 +39,7 @@ static void mbus_to_mat_elmt_t(snap_membus_t *data_read, uint64_t addr_in_index,
 	unsigned int max_index = MAX_NB_OF_WORDS_READ * MAX_NB_OF_DECIMAL_PERDW + addr_in_index;
 	unsigned int index_incr = 0;
 
-	loop_m2d1: for(unsigned int i = 0; i < MAX_NB_OF_WORDS_READ+1; i++)
+	loop_m2d1: for(unsigned int i = 0; i < MAX_NB_OF_WORDS_READ; i++)
 #pragma HLS PIPELINE
 	   loop_m2d2: for(unsigned int j = 0; j < MAX_NB_OF_DECIMAL_PERDW; j++)
 	   {
@@ -65,15 +65,15 @@ static void  mat_elmt_t_to_mbus(mat_elmt_t *table_decimal_out, uint64_t addr_out
 	unsigned int max_index = MAX_NB_OF_WORDS_READ * MAX_NB_OF_DECIMAL_PERDW + addr_out_index;
 	unsigned int index_incr = 0;
 
-	loop_d2m1: for(unsigned int i = 0; i < MAX_NB_OF_WORDS_READ+1; i++)
+	loop_d2m1: for(unsigned int i = 0; i < MAX_NB_OF_WORDS_READ; i++)
 #pragma HLS PIPELINE
 	   loop_d2m2: for(unsigned int j = 0; j < MAX_NB_OF_DECIMAL_PERDW; j++)
 	   {
 		unsigned int index = i*MAX_NB_OF_DECIMAL_PERDW + j;
-		if ((index >= min_index) && (index <= max_index)) {
+		//if ((index >= min_index) && (index <= max_index)) {
 			value_d = table_decimal_out[index_incr++];
 			data_to_be_written[i]((8*sizeof(mat_elmt_t)*(j+1))-1, (8*sizeof(mat_elmt_t)*j)) = (uint64_t)value_u;
-		}
+		//}
 		printf("DEBUG mat_elmt_t_to_mbus: index=%u, min_index=%u, max_index=%u\n", index, min_index, max_index);
 	   }
 }
@@ -214,11 +214,12 @@ static int process_action(snap_membus_t *din_gmem,
 	      action_reg *act_reg)
 {
     uint32_t size, bytes_to_transfer;
-    uint64_t i_idx, o_idx;
+    uint64_t i_idx, o_idx, offset_to_point_b;
 
     /* byte address received need to be aligned with port width */
     i_idx = act_reg->Data.in.addr >> ADDR_RIGHT_SHIFT;
     o_idx = act_reg->Data.out.addr >> ADDR_RIGHT_SHIFT;
+    offset_to_point_b = act_reg->Data.offset_to_point_b ;// >> ADDR_RIGHT_SHIFT;
     size = act_reg->Data.in.size;
 
     int a[MAX_SIZE*MAX_SIZE], b[MAX_SIZE*MAX_SIZE], c[MAX_SIZE*MAX_SIZE];
@@ -236,7 +237,7 @@ static int process_action(snap_membus_t *din_gmem,
 	//memcpy((int*) b, din_gmem + i_idx + act_reg->Data.offset_to_point_b, MAX_SIZE * MAX_SIZE * sizeof(int));
 
 	mbus_to_mat_elmt_t(din_gmem + i_idx, act_reg->Data.addr_in1_index, a);
-	mbus_to_mat_elmt_t(din_gmem + i_idx + act_reg->Data.offset_to_point_b, act_reg->Data.addr_in2_index, b);
+	mbus_to_mat_elmt_t(din_gmem + i_idx + offset_to_point_b, act_reg->Data.addr_in2_index, b);
 
 	mmult(	a, // Read-Only Matrix A
         	b, // Read-Only Matrix B
@@ -322,11 +323,16 @@ int main(void)
     int size_n, size_k, size_m;
     size_n = size_k = size_m = DATA_SIZE;
 
-    unsigned memory_lines_a = ((unsigned int)ceil((float)(size_n * size_k * sizeof(int)) / (float)sizeof(snap_membus_t)));
-    unsigned memory_lines_b = ((unsigned int)ceil((float)(size_k * size_m * sizeof(int)) / (float)sizeof(snap_membus_t)));
-    unsigned memory_lines_c = ((unsigned int)ceil((float)(size_n * size_m * sizeof(int)) / (float)sizeof(snap_membus_t)));
+    unsigned memory_lines_a = ((unsigned int)ceil((float)(size_n * size_k * sizeof(int)) / (float)sizeof(snap_membus_1024_t)));
+    unsigned memory_lines_b = ((unsigned int)ceil((float)(size_k * size_m * sizeof(int)) / (float)sizeof(snap_membus_1024_t)));
+    unsigned memory_lines_c = ((unsigned int)ceil((float)(size_n * size_m * sizeof(int)) / (float)sizeof(snap_membus_1024_t)));
     unsigned memory_lines_in = (memory_lines_a + memory_lines_b);
     unsigned memory_lines_out = memory_lines_c;
+    unsigned axi_lines_a = ((unsigned int)ceil((float)(size_n * size_k * sizeof(int)) / (float)sizeof(snap_membus_t)));
+    unsigned axi_lines_b = ((unsigned int)ceil((float)(size_k * size_m * sizeof(int)) / (float)sizeof(snap_membus_t)));
+    unsigned axi_lines_c = ((unsigned int)ceil((float)(size_n * size_m * sizeof(int)) / (float)sizeof(snap_membus_t)));
+    unsigned axi_lines_in = (axi_lines_a + axi_lines_b);
+    unsigned axi_lines_out = axi_lines_c;
     int64_t offset_b = memory_lines_a;
 
     snap_membus_t * din_gmem = (snap_membus_t *)malloc(memory_lines_in*sizeof(snap_membus_t));
@@ -339,10 +345,10 @@ int main(void)
     printf("INFO: Elements/Bytes  for a  : %u/%u\n", size_n * size_k, size_n * size_k * sizeof(int));
     printf("INFO: Elements/Bytes  for b  : %u/%u\n", size_k * size_m, size_k * size_m * sizeof(int));
     printf("INFO: Elements/Bytes  for c  : %u/%u\n", size_n * size_m, size_n * size_m * sizeof(int));
-    printf("INFO: AXI/Cache lines for a  : %u/%u\n", memory_lines_a, memory_lines_a/2);
-    printf("INFO: AXI/Cache lines for b  : %u/%u\n", memory_lines_b, memory_lines_b/2 );
-    printf("INFO: AXI/Cache lines for IN : %u/%u\n", memory_lines_in, memory_lines_in/2);
-    printf("INFO: AXI/Cache lines for OUT: %u/%u\n", memory_lines_out, memory_lines_out/2);
+    printf("INFO: AXI/Cache lines for a  : %u/%u\n", axi_lines_a, memory_lines_a);
+    printf("INFO: AXI/Cache lines for b  : %u/%u\n", axi_lines_b, memory_lines_b );
+    printf("INFO: AXI/Cache lines for IN : %u/%u\n", axi_lines_in, memory_lines_in);
+    printf("INFO: AXI/Cache lines for OUT: %u/%u\n", axi_lines_out, memory_lines_out);
     printf("INFO: size_n=%u, size_k=%u, size_m=%u\n", size_n, size_k, size_m);
     printf("INFO: offset_b=%d\n", offset_b);
 
@@ -412,7 +418,7 @@ int main(void)
     if (act_reg.Control.Retc == SNAP_RETC_FAILURE) {
 	fprintf(stderr, " ==> RETURN CODE FAILURE <==\n");
 	return 1;
-    }
+    } 
 
     memcpy(source_hw_results, dout_gmem, matrix_size_bytes);
 

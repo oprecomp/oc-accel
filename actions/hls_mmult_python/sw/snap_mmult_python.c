@@ -33,12 +33,20 @@
 #include <sys/time.h>
 #include <assert.h>
 
+/* FIXME For bypassing "expected unqualified-id" error of osnap_tools.h with g++ compiler for "Fake 
+         this for old RHEL verions e.g. RHEL5.6"
+*/
+#define CLOCK_MONOTONIC_RAW
 #include <osnap_tools.h>
 #include <libosnap.h>
 #include <action_mmult_python.h>
 #include <osnap_hls_if.h>
 
 #include <math.h>
+
+#ifdef FLOATX_ENABLE
+#include "floatx.hpp"
+#endif
 
 int verbose_flag = 0;
 
@@ -227,7 +235,7 @@ int main(int argc)
 	addr_in1 = (unsigned long)source_in1;
 	addr_in2 = (unsigned long)source_in2;
 
-	float offset_b_f = (float)((source_in2-source_in1) * sizeof(int)) / 64;
+	float offset_b_f = 8.0;//(float)((source_in2-source_in1) * sizeof(int)) / 64;
 	offset_b = (int64_t)ceil(offset_b_f);  //FIXME: can be 128 for 1k AXI I/F
 
 	float source_in1_align_f = (float)addr_in1 / 64.0;
