@@ -1,6 +1,9 @@
-# OC-Accel Framework
+# OC-Accel Transprecision Framework
 
-OpenCAPI Acceleration Framework, abbreviated as OC-Accel, is a framework that helps you implement your FPGA acceleration solutions with OpenCAPI technology.
+OpenCAPI Transprecision Acceleration Framework, abbreviated as OC-Accel-TP, is a framework that helps you implement your FPGA acceleration solutions with OpenCAPI technology.
+
+The framework is a fork of OC-Accel Framework, that also includes some examples with transprecision capabilities.
+The concept of transprecision computing is an initiative of [OPRECOMP H2020 project](http://oprecomp.eu/).
 
 # Documentation
  <https://opencapi.github.io/oc-accel-doc/>
