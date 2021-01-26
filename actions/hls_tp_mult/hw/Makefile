@@ -40,6 +40,7 @@ endif
 SOLUTION_NAME ?= tp_mult
 SOLUTION_DIR ?= hlsTpMult
 srcs += action_tp_mult.cpp 
+HLS_CFLAGS += -I$(SNAP_ROOT)/transprecision/ac_types/include/
 
 # If you have the action code outside of the default snap directory structure, 
 # change to /path/to/snap/actions/hls.mk

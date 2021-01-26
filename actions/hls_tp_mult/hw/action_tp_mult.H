@@ -19,9 +19,16 @@
 
 #include <stdint.h>
 #include <string.h>
+
+// Xilinx AP_* Datatypes
 #include <ap_int.h>
 #include "ap_fixed.h"
 #include "hls_half.h"
+
+// HLSLIBS AC_* Datatypes
+// #include "ac_float.h"
+// #include "ac_std_float.h"
+
 
 #include "hls_snap_1024.H"
 #include <common_tp.h> /* DecimalMult Job definition */
@@ -34,6 +41,7 @@ typedef ap_uint<32>		tp_elmt_t_uint;
 typedef ap_ufixed<28, 4>	tp_elmt_t_ufixed;
 typedef ap_fixed<28, 4>		tp_elmt_t_fixed;
 typedef half			tp_elmt_t_half;
+//typedef ac::bfloat16		tp_elmt_t_bfloat16;
 typedef float			tp_elmt_t_float;
 typedef double			tp_elmt_t_double;
 

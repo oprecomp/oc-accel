@@ -4,8 +4,8 @@ set_top hls_action
 
 # Can that be a list?
 foreach file [ list action_tp_mult.cpp  ] {
-  add_files ${file} -cflags " -I/home/diaman/projects/oc-accel_oprecomp/actions/include -I/home/diaman/projects/oc-accel_oprecomp/software/include -I../../../software/examples -I../include"
-  add_files -tb ${file} -cflags " -DNO_SYNTH -I/home/diaman/projects/oc-accel_oprecomp/actions/include -I/home/diaman/projects/oc-accel_oprecomp/software/include -I../../../software/examples -I../include"
+  add_files ${file} -cflags "-I/home/diaman/projects/oc-accel_oprecomp/transprecision/ac_types/include/ -I/home/diaman/projects/oc-accel_oprecomp/actions/include -I/home/diaman/projects/oc-accel_oprecomp/software/include -I../../../software/examples -I../include"
+  add_files -tb ${file} -cflags "-I/home/diaman/projects/oc-accel_oprecomp/transprecision/ac_types/include/ -DNO_SYNTH -I/home/diaman/projects/oc-accel_oprecomp/actions/include -I/home/diaman/projects/oc-accel_oprecomp/software/include -I../../../software/examples -I../include"
 }
 
 open_solution "tp_mult"

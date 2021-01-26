@@ -99,7 +99,7 @@ static int process_action(snap_membus_512_t *din_gmem,
 	// CONVERT MAX_NB_OF_TP_READ*8 Bytes of data read into a table of 16 doubles OR
 	// CONVERT MAX_NB_OF_TP_READ*4 Bytes of data read into a table of 32 floats
 	mbus_to_tp(buffer_in, data_in);
-
+	
 	tp_t tp_mode = (tp_t)(act_reg->Data.transprecision_mode);
 	// PROCESSING THE DATA (one third number of results)
 	
@@ -141,7 +141,7 @@ static int process_action(snap_membus_512_t *din_gmem,
 		d_fixed = a_fixed * b_fixed * c_fixed;
 		data_out[i] =  (mat_elmt_t)d_fixed;
 	    break;
-	    case HALF:
+	    case IEEE_HALF:
 		static tp_elmt_t_half a_half, b_half, c_half, d_half;
 	        a_half = (tp_elmt_t_float)data_in[3*i];
 		b_half = (tp_elmt_t_float)data_in[(3*i)+1];
@@ -149,7 +149,15 @@ static int process_action(snap_membus_512_t *din_gmem,
 		d_half = a_half * b_half * c_half;
 		data_out[i] =  (mat_elmt_t)d_half;
 	    break;
-	    case FLOAT:
+/*	    case BFLOAT16:
+		static tp_elmt_t_bfloat16 a_bfloat16, b_bfloat16, c_bfloat16, d_bfloat16;
+	        a_bfloat16 = (tp_elmt_t_float)data_in[3*i];
+		b_bfloat16 = (tp_elmt_t_float)data_in[(3*i)+1];
+		c_bfloat16 = (tp_elmt_t_float)data_in[(3*i)+2];
+		d_bfloat16 = a_bfloat16 * b_bfloat16 * c_bfloat16;
+		data_out[i] =  (mat_elmt_t)(d_bfloat16.to_float());
+	    break;
+*/	    case IEEE_FLOAT:
 		static tp_elmt_t_float a_float, b_float, c_float, d_float;
 	        a_float = (tp_elmt_t_float)data_in[3*i];
 		b_float = (tp_elmt_t_float)data_in[(3*i)+1];
@@ -157,7 +165,7 @@ static int process_action(snap_membus_512_t *din_gmem,
 		d_float = a_float * b_float * c_float;
 		data_out[i] =  (mat_elmt_t)d_float;
 	    break;
-	    case DOUBLE:
+	    case IEEE_DOUBLE:
 		static tp_elmt_t_double a_double, b_double, c_double, d_double;
 	        a_double = (tp_elmt_t_float)data_in[3*i];
 		b_double = (tp_elmt_t_float)data_in[(3*i)+1];

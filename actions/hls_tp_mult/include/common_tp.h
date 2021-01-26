@@ -33,10 +33,11 @@ typedef enum {
 	AP_INT 		= 0x01,
 	AP_UFIXED	= 0x02,
 	AP_FIXED	= 0x03,
-	HALF		= 0x04,
-	FLOAT		= 0x05,
-	DOUBLE		= 0x06,
-	UNSUPPORTED	= 0x07,
+	IEEE_HALF	= 0x04,
+//	BFLOAT16        = 0x05,
+	IEEE_FLOAT	= 0x06,
+	IEEE_DOUBLE	= 0x07,
+	UNSUPPORTED	= 0x08,
 } tp_t;  
   
   
