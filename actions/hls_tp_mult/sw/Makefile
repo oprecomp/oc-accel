@@ -43,6 +43,15 @@ endif
 
 projs += snap_tp_mult
 
+FLOATXDIR = $(SNAP_ROOT)/transprecision/FloatX/src/
+CXXFLAGS = -std=c++11 -fpermissive -DFLOATX_ENABLE -I$(FLOATXDIR)
+
+# To enables FloatX on host, the g++ compiler should be selected, instead of gcc in the file 
+# $(SNAP_ROOT)/actions/software.mk (e.g. dirty-fix: CC=g++). In that case we can add the 
+# followng flags
+# CFLAGS += $(CXXFLAGS)
+
+
 # If you have the host code outside of the default snap directory structure, 
 # change to /path/to/snap/actions/software.mk
 include $(SNAP_ROOT)/actions/software.mk

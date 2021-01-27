@@ -38,6 +38,14 @@
 #include <common_tp.h>
 #include <osnap_hls_if.h>
 
+#include <math.h>
+
+
+
+#ifdef FLOATX_ENABLE
+#include "floatx.hpp"
+#endif
+
 int verbose_flag = 0;
 
 static const char *version = GIT_VERSION;
@@ -105,7 +113,7 @@ int main(int argc, char *argv[])
 	struct timeval etime, stime;
 	ssize_t max_number_of_inputs = MAX_NB_OF_TP_READ; // Value defined in sync with the hardware
 	ssize_t inputs_to_process = 12;    // Allow user to process only part of the inputs
-	uint32_t transprecision_mode = FLOAT;
+	uint32_t transprecision_mode = IEEE_FLOAT;
 	uint8_t type_in = SNAP_ADDRTYPE_HOST_DRAM;
 	uint64_t addr_in = 0x0ull;
 	uint8_t type_out = SNAP_ADDRTYPE_HOST_DRAM;
@@ -161,7 +169,7 @@ int main(int argc, char *argv[])
 			// check max: bounded to MAX_NB_OF_TP_READ in this example
 			if (transprecision_mode >= UNSUPPORTED) {
 				printf("WARNING: Unsupported transprecision_mode option %u. Will assign float.\n", transprecision_mode);
-				transprecision_mode = FLOAT;
+				transprecision_mode = IEEE_FLOAT;
 			}
 			break;
 		case 't':
